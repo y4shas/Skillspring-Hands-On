@@ -1,22 +1,75 @@
-﻿public class MVCPattern {
+public class MVCPattern {
 
-    public static void main(String[] args) {
+    static class Student {
+        private String name;
+        private String id;
+        private String grade;
 
-        System.out.println("Exercise 10: Implementing the MVC Pattern");
-        System.out.println("Scenario:");
-        System.out.println("You are developing a simple web application for managing student records using the MVC pattern.");
-        System.out.println("Steps:");
-        System.out.println("Create a New Java Project:");
-        System.out.println("Create a new Java project named MVCPatternExample.");
-        System.out.println("Define Model Class:");
-        System.out.println("Create a class Student with attributes like name, id, and grade.");
-        System.out.println("Define View Class:");
-        System.out.println("Create a class StudentView with a method displayStudentDetails().");
-        System.out.println("Define Controller Class:");
-        System.out.println("Create a class StudentController that handles the communication between the model and the view.");
-        System.out.println("Test the MVC Implementation:");
-        System.out.println("Create a main class to demonstrate creating a Student, updating its details using StudentController, and displaying them using StudentView.");
+        public Student(String name, String id, String grade) {
+            this.name = name;
+            this.id = id;
+            this.grade = grade;
+        }
 
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+
+        public String getGrade() { return grade; }
+        public void setGrade(String grade) { this.grade = grade; }
     }
 
+    static class StudentView {
+        public void displayStudentDetails(String name, String id, String grade) {
+            System.out.println("=== Student Details ===");
+            System.out.println("Name  : " + name);
+            System.out.println("ID    : " + id);
+            System.out.println("Grade : " + grade);
+            System.out.println("======================");
+        }
+    }
+
+    static class StudentController {
+        private Student model;
+        private StudentView view;
+
+        public StudentController(Student model, StudentView view) {
+            this.model = model;
+            this.view = view;
+        }
+
+        public void setStudentName(String name) { model.setName(name); }
+        public String getStudentName() { return model.getName(); }
+
+        public void setStudentId(String id) { model.setId(id); }
+        public String getStudentId() { return model.getId(); }
+
+        public void setStudentGrade(String grade) { model.setGrade(grade); }
+        public String getStudentGrade() { return model.getGrade(); }
+
+        public void updateView() {
+            view.displayStudentDetails(model.getName(), model.getId(), model.getGrade());
+        }
+    }
+
+    public static void main(String[] args) {
+        Student student = new Student("Alice Johnson", "STU-1001", "A");
+        StudentView view = new StudentView();
+        StudentController controller = new StudentController(student, view);
+
+        System.out.println("Initial student record:");
+        controller.updateView();
+
+        controller.setStudentName("Alice Johnson-Smith");
+        controller.setStudentGrade("A+");
+
+        System.out.println("After update:");
+        controller.updateView();
+
+        controller.setStudentId("STU-2001");
+        System.out.println("After ID reassignment:");
+        controller.updateView();
+    }
 }

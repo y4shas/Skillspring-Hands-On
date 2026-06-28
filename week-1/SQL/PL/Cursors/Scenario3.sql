@@ -1,2 +1,25 @@
-﻿Scenario 3: Update the interest rate for all loans based on a new policy.
-Question: Write a PL/SQL block using an explicit cursor UpdateLoanInterestRates that fetches all loans and updates their interest rates based on the new policy.
+DECLARE
+    CURSOR UpdateLoanInterestRates IS
+        SELECT LoanID, CustomerID, LoanAmount, InterestRate
+        FROM Loans
+        FOR UPDATE;
+
+    v_new_rate NUMBER;
+BEGIN
+    FOR rec IN UpdateLoanInterestRates LOOP
+        v_new_rate := rec.InterestRate + 0.5;
+
+        UPDATE Loans
+        SET InterestRate = v_new_rate
+        WHERE CURRENT OF UpdateLoanInterestRates;
+
+        DBMS_OUTPUT.PUT_LINE('Loan ID: ' || rec.LoanID ||
+            ' | Customer ID: ' || rec.CustomerID ||
+            ' | Old Rate: ' || rec.InterestRate || '%' ||
+            ' | New Rate: ' || v_new_rate || '%');
+    END LOOP;
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Annual interest rate increase of 0.5% applied to all loans.');
+END;
+/

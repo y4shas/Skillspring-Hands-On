@@ -1,22 +1,75 @@
-﻿public class StrategyPattern {
+public class StrategyPattern {
 
-    public static void main(String[] args) {
-
-        System.out.println("Exercise 8: Implementing the Strategy Pattern");
-        System.out.println("Scenario:");
-        System.out.println("You are developing a payment system where different payment methods (e.g., Credit Card, PayPal) can be selected at runtime. Use the Strategy Pattern to achieve this.");
-        System.out.println("Steps:");
-        System.out.println("Create a New Java Project:");
-        System.out.println("Create a new Java project named StrategyPatternExample.");
-        System.out.println("Define Strategy Interface:");
-        System.out.println("Create an interface PaymentStrategy with a method pay().");
-        System.out.println("Implement Concrete Strategies:");
-        System.out.println("Create classes CreditCardPayment, PayPalPayment that implement PaymentStrategy.");
-        System.out.println("Implement Context Class:");
-        System.out.println("Create a class PaymentContext that holds a reference to PaymentStrategy and a method to execute the strategy.");
-        System.out.println("Test the Strategy Implementation:");
-        System.out.println("Create a test class to demonstrate selecting and using different payment strategies.");
-
+    interface PaymentStrategy {
+        void pay(double amount);
     }
 
+    static class CreditCardPayment implements PaymentStrategy {
+        private String cardNumber;
+
+        public CreditCardPayment(String cardNumber) {
+            this.cardNumber = cardNumber;
+        }
+
+        public void pay(double amount) {
+            System.out.println("Paid $" + amount + " using Credit Card ending in " + cardNumber.substring(cardNumber.length() - 4));
+        }
+    }
+
+    static class PayPalPayment implements PaymentStrategy {
+        private String email;
+
+        public PayPalPayment(String email) {
+            this.email = email;
+        }
+
+        public void pay(double amount) {
+            System.out.println("Paid $" + amount + " using PayPal account: " + email);
+        }
+    }
+
+    static class BitcoinPayment implements PaymentStrategy {
+        private String walletAddress;
+
+        public BitcoinPayment(String walletAddress) {
+            this.walletAddress = walletAddress;
+        }
+
+        public void pay(double amount) {
+            System.out.println("Paid $" + amount + " using Bitcoin wallet: " + walletAddress);
+        }
+    }
+
+    static class PaymentContext {
+        private PaymentStrategy paymentStrategy;
+
+        public void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+            this.paymentStrategy = paymentStrategy;
+        }
+
+        public void executePayment(double amount) {
+            if (paymentStrategy == null) {
+                System.out.println("No payment strategy set.");
+                return;
+            }
+            paymentStrategy.pay(amount);
+        }
+    }
+
+    public static void main(String[] args) {
+        PaymentContext context = new PaymentContext();
+
+        context.setPaymentStrategy(new CreditCardPayment("1234567890123456"));
+        context.executePayment(299.99);
+
+        context.setPaymentStrategy(new PayPalPayment("user@example.com"));
+        context.executePayment(149.50);
+
+        context.setPaymentStrategy(new BitcoinPayment("1A2b3C4d5E6f7G8h9I0j"));
+        context.executePayment(500.00);
+
+        System.out.println("Switching back to Credit Card:");
+        context.setPaymentStrategy(new CreditCardPayment("9876543210987654"));
+        context.executePayment(75.00);
+    }
 }

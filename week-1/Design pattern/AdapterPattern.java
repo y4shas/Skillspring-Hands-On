@@ -1,22 +1,59 @@
-﻿public class AdapterPattern {
+public class AdapterPattern {
 
-    public static void main(String[] args) {
-
-        System.out.println("Exercise 4: Implementing the Adapter Pattern");
-        System.out.println("Scenario:");
-        System.out.println("You are developing a payment processing system that needs to integrate with multiple third-party payment gateways with different interfaces. Use the Adapter Pattern to achieve this.");
-        System.out.println("Steps:");
-        System.out.println("Create a New Java Project:");
-        System.out.println("Create a new Java project named AdapterPatternExample.");
-        System.out.println("Define Target Interface:");
-        System.out.println("Create an interface PaymentProcessor with methods like processPayment().");
-        System.out.println("Implement Adaptee Classes:");
-        System.out.println("Create classes for different payment gateways with their own methods.");
-        System.out.println("Implement the Adapter Class:");
-        System.out.println("Create an adapter class for each payment gateway that implements PaymentProcessor and translates the calls to the gateway-specific methods.");
-        System.out.println("Test the Adapter Implementation:");
-        System.out.println("Create a test class to demonstrate the use of different payment gateways through the adapter.");
-
+    interface PaymentProcessor {
+        void processPayment(double amount);
     }
 
+    static class PayPalGateway {
+        public void makePayment(double totalAmount) {
+            System.out.println("PayPal: Processing payment of $" + totalAmount + " via PayPal account.");
+        }
+    }
+
+    static class StripeGateway {
+        public void charge(double amountInCents) {
+            System.out.println("Stripe: Charging " + (int) amountInCents + " cents ($" + (amountInCents / 100) + ") via Stripe.");
+        }
+    }
+
+    static class PayPalAdapter implements PaymentProcessor {
+        private PayPalGateway payPalGateway;
+
+        public PayPalAdapter(PayPalGateway payPalGateway) {
+            this.payPalGateway = payPalGateway;
+        }
+
+        public void processPayment(double amount) {
+            payPalGateway.makePayment(amount);
+        }
+    }
+
+    static class StripeAdapter implements PaymentProcessor {
+        private StripeGateway stripeGateway;
+
+        public StripeAdapter(StripeGateway stripeGateway) {
+            this.stripeGateway = stripeGateway;
+        }
+
+        public void processPayment(double amount) {
+            stripeGateway.charge(amount * 100);
+        }
+    }
+
+    public static void main(String[] args) {
+        PaymentProcessor payPalProcessor = new PayPalAdapter(new PayPalGateway());
+        PaymentProcessor stripeProcessor = new StripeAdapter(new StripeGateway());
+
+        System.out.println("Processing payment via PayPal:");
+        payPalProcessor.processPayment(150.75);
+
+        System.out.println("Processing payment via Stripe:");
+        stripeProcessor.processPayment(89.99);
+
+        System.out.println("Switching processors dynamically:");
+        PaymentProcessor[] processors = {payPalProcessor, stripeProcessor};
+        for (PaymentProcessor processor : processors) {
+            processor.processPayment(200.00);
+        }
+    }
 }

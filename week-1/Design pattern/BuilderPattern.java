@@ -1,23 +1,71 @@
-﻿public class BuilderPattern {
+public class BuilderPattern {
 
-    public static void main(String[] args) {
+    static class Computer {
+        private String cpu;
+        private String ram;
+        private String storage;
 
-        System.out.println("Exercise 3: Implementing the Builder Pattern");
-        System.out.println("Scenario:");
-        System.out.println("You are developing a system to create complex objects such as a Computer with multiple optional parts. Use the Builder Pattern to manage the construction process.");
-        System.out.println("Steps:");
-        System.out.println("Create a New Java Project:");
-        System.out.println("Create a new Java project named BuilderPatternExample.");
-        System.out.println("Define a Product Class:");
-        System.out.println("Create a class Computer with attributes like CPU, RAM, Storage, etc.");
-        System.out.println("Implement the Builder Class:");
-        System.out.println("Create a static nested Builder class inside Computer with methods to set each attribute.");
-        System.out.println("Provide a build() method in the Builder class that returns an instance of Computer.");
-        System.out.println("Implement the Builder Pattern:");
-        System.out.println("Ensure that the Computer class has a private constructor that takes the Builder as a parameter.");
-        System.out.println("Test the Builder Implementation:");
-        System.out.println("Create a test class to demonstrate the creation of different configurations of Computer using the Builder pattern.");
+        private Computer(Builder builder) {
+            this.cpu = builder.cpu;
+            this.ram = builder.ram;
+            this.storage = builder.storage;
+        }
 
+        public String getCpu() { return cpu; }
+        public String getRam() { return ram; }
+        public String getStorage() { return storage; }
+
+        public String toString() {
+            return "Computer [CPU=" + cpu + ", RAM=" + ram + ", Storage=" + storage + "]";
+        }
+
+        static class Builder {
+            private String cpu;
+            private String ram;
+            private String storage;
+
+            public Builder setCPU(String cpu) {
+                this.cpu = cpu;
+                return this;
+            }
+
+            public Builder setRAM(String ram) {
+                this.ram = ram;
+                return this;
+            }
+
+            public Builder setStorage(String storage) {
+                this.storage = storage;
+                return this;
+            }
+
+            public Computer build() {
+                return new Computer(this);
+            }
+        }
     }
 
+    public static void main(String[] args) {
+        Computer gamingPC = new Computer.Builder()
+                .setCPU("Intel Core i9-13900K")
+                .setRAM("64GB DDR5")
+                .setStorage("2TB NVMe SSD")
+                .build();
+
+        Computer officePC = new Computer.Builder()
+                .setCPU("Intel Core i5-12400")
+                .setRAM("16GB DDR4")
+                .setStorage("512GB SSD")
+                .build();
+
+        Computer serverPC = new Computer.Builder()
+                .setCPU("AMD EPYC 7763")
+                .setRAM("256GB ECC DDR4")
+                .setStorage("10TB HDD RAID")
+                .build();
+
+        System.out.println("Gaming PC: " + gamingPC);
+        System.out.println("Office PC: " + officePC);
+        System.out.println("Server PC: " + serverPC);
+    }
 }

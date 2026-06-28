@@ -1,2 +1,9 @@
-﻿Scenario 1: Calculate the age of customers for eligibility checks.
-Question: Write a function CalculateAge that takes a customer's date of birth as input and returns their age in years.
+CREATE OR REPLACE FUNCTION CalculateAge(
+    p_dob IN DATE
+) RETURN NUMBER AS
+    v_age NUMBER;
+BEGIN
+    v_age := FLOOR(MONTHS_BETWEEN(SYSDATE, p_dob) / 12);
+    RETURN v_age;
+END CalculateAge;
+/

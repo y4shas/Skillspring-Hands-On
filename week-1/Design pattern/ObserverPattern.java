@@ -1,24 +1,93 @@
-﻿public class ObserverPattern {
+import java.util.ArrayList;
+import java.util.List;
 
-    public static void main(String[] args) {
+public class ObserverPattern {
 
-        System.out.println("Exercise 7: Implementing the Observer Pattern");
-        System.out.println("Scenario:");
-        System.out.println("You are developing a stock market monitoring application where multiple clients need to be notified whenever stock prices change. Use the Observer Pattern to achieve this.");
-        System.out.println("Steps:");
-        System.out.println("Create a New Java Project:");
-        System.out.println("Create a new Java project named ObserverPatternExample.");
-        System.out.println("Define Subject Interface:");
-        System.out.println("Create an interface Stock with methods to register, deregister, and notify observers.");
-        System.out.println("Implement Concrete Subject:");
-        System.out.println("Create a class StockMarket that implements Stock and maintains a list of observers.");
-        System.out.println("Define Observer Interface:");
-        System.out.println("Create an interface Observer with a method update().");
-        System.out.println("Implement Concrete Observers:");
-        System.out.println("Create classes MobileApp, WebApp that implement Observer.");
-        System.out.println("Test the Observer Implementation:");
-        System.out.println("Create a test class to demonstrate the registration and notification of observers.");
-
+    interface Observer {
+        void update(String event);
     }
 
+    interface Subject {
+        void registerObserver(Observer observer);
+        void removeObserver(Observer observer);
+        void notifyObservers();
+    }
+
+    static class StockMarket implements Subject {
+        private List<Observer> observers = new ArrayList<>();
+        private String stockName;
+        private double stockPrice;
+
+        public StockMarket(String stockName, double initialPrice) {
+            this.stockName = stockName;
+            this.stockPrice = initialPrice;
+        }
+
+        public void registerObserver(Observer observer) {
+            observers.add(observer);
+        }
+
+        public void removeObserver(Observer observer) {
+            observers.remove(observer);
+        }
+
+        public void notifyObservers() {
+            String event = stockName + " price changed to $" + stockPrice;
+            for (Observer observer : observers) {
+                observer.update(event);
+            }
+        }
+
+        public void setStockPrice(double newPrice) {
+            this.stockPrice = newPrice;
+            notifyObservers();
+        }
+    }
+
+    static class StockBroker implements Observer {
+        private String name;
+
+        public StockBroker(String name) {
+            this.name = name;
+        }
+
+        public void update(String event) {
+            System.out.println("StockBroker [" + name + "] received: " + event);
+        }
+    }
+
+    static class StockTrader implements Observer {
+        private String name;
+
+        public StockTrader(String name) {
+            this.name = name;
+        }
+
+        public void update(String event) {
+            System.out.println("StockTrader [" + name + "] received: " + event);
+        }
+    }
+
+    public static void main(String[] args) {
+        StockMarket market = new StockMarket("GOOGL", 2800.00);
+
+        Observer broker1 = new StockBroker("Alice");
+        Observer broker2 = new StockBroker("Bob");
+        Observer trader1 = new StockTrader("Charlie");
+        Observer trader2 = new StockTrader("Diana");
+
+        market.registerObserver(broker1);
+        market.registerObserver(broker2);
+        market.registerObserver(trader1);
+        market.registerObserver(trader2);
+
+        System.out.println("--- Price update to $2850.00 ---");
+        market.setStockPrice(2850.00);
+
+        System.out.println("--- Removing broker Bob ---");
+        market.removeObserver(broker2);
+
+        System.out.println("--- Price update to $2900.50 ---");
+        market.setStockPrice(2900.50);
+    }
 }
